@@ -40,7 +40,7 @@ router.post('/addStory', fetchuser, [
         }
     })
 
-// ROUTE 2: Delete an existing Note using: DELETE "/api/notes/deletenote". Login required
+// ROUTE 3: Delete an existing Note using: DELETE "/api/notes/deletenote". Login required
 router.delete('/deletestory/:id', fetchuser, async (req, res) => {
     try {
         // Find the note to be delete and delete it
@@ -61,13 +61,17 @@ router.delete('/deletestory/:id', fetchuser, async (req, res) => {
 })
 
 
-// ROUTE 3: like an existing story using: post "/likestory". Login required
+// ROUTE 4: like an existing story using: post "/likestory". Login required
 router.post('/likestory/:id', fetchuser, async (req, res) => {
     try {
 
         let story = await Story.findById(req.params.id);
         if (!story) { return res.status(404).send("Not Found") }
 
+        const index = story.likes.indexOf(req.user.id);
+        if(index != -1){
+            return res.status(404).json({"message" : "You have already liked the story."})
+        }
         story.likes.push(req.user.id);
         await story.save();
         res.json({ "Success": "Story has been liked", story : story });
@@ -77,7 +81,7 @@ router.post('/likestory/:id', fetchuser, async (req, res) => {
     }
 })
 
-// ROUTE 3: like an existing story using: post "/unlikestory". Login required
+// ROUTE 5: like an existing story using: post "/unlikestory". Login required
 router.delete('/unlikestory/:id', fetchuser, async (req, res) => {
     try {
 
@@ -101,4 +105,14 @@ router.delete('/unlikestory/:id', fetchuser, async (req, res) => {
     }
 })
 
+// ROUTE 6: Get a Notes using: GET "/fetchstory/:id". Login required
+router.get('/fetchstory/:id', fetchuser, async (req, res) => {
+    try {
+        const story_ = await Story.findById(req.params.id);
+        res.json(story_)
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+})
 module.exports = router

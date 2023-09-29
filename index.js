@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json())
 app.use(require('./routes/auth'))
 app.use(require('./routes/post-story'))
-// app.use(require('./routes/like-story'))
+app.use(require('./routes/leaderboard'))
 
 
 app.listen(port, () => {
